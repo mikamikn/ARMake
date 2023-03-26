@@ -1,0 +1,96 @@
+button  {
+    width: 200px;
+    height: 50px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+  }
+  .start-make {
+    color: white;
+    background-color: #ff80ab;
+  }
+  .end-make {
+    color: #ff80ab;
+    background-color: white;
+    border: 1px solid #ff80ab;
+  }
+  label.select-label {
+    color:#949394;
+    font-size: 20px;
+    font-weight: bold;
+    display: inline-block;
+    width: 100px;
+  }
+  .selectbox-001 {
+      position: relative;
+  }
+
+  .selectbox-001::before,
+  .selectbox-001::after {
+      position: absolute;
+      content: '';
+      pointer-events: none;
+  }
+
+  .selectbox-001::before {
+      right: 0;
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border-radius: 0 5px 5px 0;
+      background-color: #a09c9c;
+  }
+
+  .selectbox-001::after {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translate(50%, -50%) rotate(45deg);
+      width: 5px;
+      height: 5px;
+      border-bottom: 3px solid #fff;
+      border-right: 3px solid #fff;
+  }
+
+  .selectbox-001 select {
+      font-size: 15px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      min-width: 230px;
+      height: 40px;
+      padding: 5px 25px 5px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: #e6edf3;
+      color: #333333;
+      cursor: pointer;
+  }
+
+  .selectbox-001 select:focus {
+      outline: 2px solid #a09c9c;
+  }
+
+  .input_video,
+  .end-make{
+    display: none;
+  }
+  #output-area {
+    display:none;
+    margin-top:10px;
+    border:5px solid #949394;
+    padding: 50px;
+    width: 1000px;
+    border-radius: 15px;
+  }
+
+  #select-area {
+    display:flex;
+    flex-direction: column;
+    margin-left: 10px;
+    justify-content:space-between;
+  }
+  .output_canvas {
+    border-radius: 10px;
+  }

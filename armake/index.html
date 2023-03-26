@@ -6,81 +6,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
-  <style>
-    button  {
-      width: 200px;
-      height: 50px;
-      font-size: 20px;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-    }
-    .start-make {
-      color: white;
-      background-color: #ff80ab;
-    }
-    .end-make {
-      color: #ff80ab;
-      background-color: white;
-      border: 1px solid #ff80ab;
-    }
-    label.select-label {
-      color:#949394;
-      font-size: 20px;
-      font-weight: bold;
-      display: inline-block;
-      width: 100px;
-    }
-    .selectbox-001 {
-        position: relative;
-    }
-
-    .selectbox-001::before,
-    .selectbox-001::after {
-        position: absolute;
-        content: '';
-        pointer-events: none;
-    }
-
-    .selectbox-001::before {
-        right: 0;
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        border-radius: 0 5px 5px 0;
-        background-color: #a09c9c;
-    }
-
-    .selectbox-001::after {
-        position: absolute;
-        top: 50%;
-        right: 20px;
-        transform: translate(50%, -50%) rotate(45deg);
-        width: 5px;
-        height: 5px;
-        border-bottom: 3px solid #fff;
-        border-right: 3px solid #fff;
-    }
-
-    .selectbox-001 select {
-        font-size: 15px;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        min-width: 230px;
-        height: 40px;
-        padding: 5px 25px 5px 15px;
-        border: none;
-        border-radius: 5px;
-        background-color: #e6edf3;
-        color: #333333;
-        cursor: pointer;
-    }
-
-    .selectbox-001 select:focus {
-        outline: 2px solid #a09c9c;
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <div class="container">
@@ -89,12 +15,12 @@
     </div>
     <div>
       <button class="start-make" onclick="return startArMake();">start</button>
-      <button class="end-make" style="display:none" onclick="return endArMake();">end</button>
+      <button class="end-make"  onclick="return endArMake();">end</button>
     </div>
-    <video class="input_video" style="display:none"></video>
-    <div id="output-area" style="display:none; margin-top:10px;border:5px solid #949394; padding: 50px; width: 1000px;border-radius: 15px;">
-      <canvas style="border-radius: 10px;" class="output_canvas" width="640px" height="360px"></canvas>
-      <div style="display:flex;flex-direction: column;margin-left: 10px;justify-content:space-between;">
+    <video class="input_video"></video>
+    <div id="output-area">
+      <canvas class="output_canvas" width="640px" height="360px"></canvas>
+      <div id="select-area">
       <div>
         <label class="select-label">LIP</label>
         <label  class="selectbox-001">
@@ -129,154 +55,6 @@
       </div>
     </div>
   </div>
+  <script src="./index.js"></script>
 </body>
-<script>
-  const videoElement = document.getElementsByClassName('input_video')[0];
-  const canvasElement = document.getElementsByClassName('output_canvas')[0];
-  const canvasCtx = canvasElement.getContext('2d');
-  const LIP = [61,146,91,181,84,17,314,405,321,375,291,409,270,269,267,0,37,39,40,185,61,78,191,80,81,82,13,312,311,310,415,308,324,318,402,317,14,87,178,88,95,78,61];
-  const RIGHT_CHEAK = [50,205,216,212,214,192,213,147,50];
-  const LEFT_CHEAK = [280,425,436,432,434,416,433,376,280];
-  const RIGHT_EYE_TOP = [33,246,161,159,158,157,173];
-  const LEFT_EYE_TOP = [466,388,387,386,385,384,398];
-
-  function fillConnectors(ctx, marks, targetMarks, color) {
-    ctx.fillStyle = color;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    let i = 0;
-    for(const targetMark of targetMarks) {
-      i++;
-      const markFrom = marks[targetMark];
-      if(i == 1) {
-        ctx.moveTo(markFrom.x * canvasElement.width, markFrom.y * canvasElement.height);
-      } else {
-        ctx.lineTo(markFrom.x * canvasElement.width, markFrom.y * canvasElement.height);
-      }
-    }
-    ctx.fill();
-  }
-  function drawEyeLine(ctx, marks) {
-    const color = document.getElementById("eyeline-color").value;
-    if(!color) {
-      return;
-    }
-    ctx.strokeStyle = color;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-    
-    ctx.beginPath();
-    let i = 0;
-    const top = marks[10];
-    const bottom = marks[0];
-    const ref = (bottom.y -top.y )/35;
-    ctx.lineWidth = ref * 200;
-
-    for(const targetMark of LEFT_EYE_TOP) {
-      i++;
-      const markFrom = marks[targetMark];
-      if(i == 1) {
-        ctx.moveTo(markFrom.x * canvasElement.width, (markFrom.y - ref)* canvasElement.height);
-      } else {
-        ctx.lineTo(markFrom.x * canvasElement.width, (markFrom.y - ref)* canvasElement.height);
-      }
-    }
-    ctx.stroke();
-
-    ctx.beginPath();
-    i = 0;
-    for(const targetMark of RIGHT_EYE_TOP) {
-      i++;
-      const markFrom = marks[targetMark];
-      if(i == 1) {
-        ctx.moveTo(markFrom.x * canvasElement.width, (markFrom.y - ref)* canvasElement.height);
-      } else {
-        ctx.lineTo(markFrom.x * canvasElement.width, (markFrom.y - ref)* canvasElement.height);
-      }
-    }
-    ctx.stroke();
-  }
-
-  
-  function drawLip(ctx, marks) {
-    const color = document.getElementById("lip-color").value;
-    if(!color) {
-      return;
-    }
-    fillConnectors(canvasCtx, marks, LIP,color);
-  }
-
-  function drawCheak(ctx, marks) {
-    const color = document.getElementById("cheak-color").value;
-    if(!color) {
-      return;
-    }
-    fillConnectors(canvasCtx, marks, LEFT_CHEAK,color);
-    fillConnectors(canvasCtx, marks, RIGHT_CHEAK,color);
-  }
-
-  function point(ctx, marks, targetMarks, color) {
-    ctx.fillStyle = color;
-    for(const targetMark of targetMarks) {
-      if(targetMark[0] == 263) continue;
-      ctx.beginPath();
-      const markFrom = marks[targetMark[0]];
-      ctx.arc(markFrom.x * canvasElement.width, markFrom.y * canvasElement.height, 1,0*Math.PI,360*Math.PI, true);
-      ctx.fill();
-      ctx.fillText(`${targetMark[0]}`,markFrom.x * canvasElement.width, markFrom.y * canvasElement.height, 100);
-    }
-  }
-  
-  function onResults(results) {
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(
-        results.image, 0, 0, canvasElement.width, canvasElement.height);
-    if (results.multiFaceLandmarks) {
-      for (const landmarks of results.multiFaceLandmarks) {
-        // point(canvasCtx,landmarks,FACEMESH_TESSELATION);
-        drawCheak(canvasCtx, landmarks);
-        drawLip(canvasCtx, landmarks);
-        drawEyeLine(canvasCtx, landmarks);
-      }
-    }
-    canvasCtx.restore();
-  }
-  
-  const faceMesh = new FaceMesh({locateFile: (file) => {
-    return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
-  }});
-  faceMesh.setOptions({
-    maxNumFaces: 1,
-    refineLandmarks: true,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
-  });
-  faceMesh.onResults(onResults);
-  let camera;
-  const startArMake = () => {
-    document.getElementsByClassName('start-make')[0].style.display = "none";
-    document.getElementsByClassName('end-make')[0].style.display = "block";
-    camera = new Camera(videoElement, {
-      onFrame: async () => {
-        await faceMesh.send({image: videoElement});
-      },
-      width: 640,
-      height: 360
-    });
-    camera.start();
-    const outputArea = document.getElementById('output-area');
-    outputArea.style.display = "flex";
-  }
-  const endArMake = () => {
-    document.getElementsByClassName('start-make')[0].style.display = "block";
-    document.getElementsByClassName('end-make')[0].style.display = "none";
-    if(camera) {
-      camera.stop();
-      const outputArea = document.getElementById('output-area');
-      outputArea.style.display = "none";
-    }
-  }
-  </script>
 </html>
